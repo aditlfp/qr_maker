@@ -19,6 +19,8 @@ jobs:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_DIR || '/' }} 
+          SOURCE_DIR: ${{ secrets.SOURCE_DIR || '.' }} 
         run: |
           if [ ! -d "$SOURCE_DIR" ]; then
             echo "Error: Source directory '$SOURCE_DIR' does not exist."
