@@ -7,9 +7,8 @@ on:
 
 jobs:
   deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
@@ -20,10 +19,4 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          timeout: 60000          # increase timeout
-          exclude: |
-            node_modules/**
-            .git/**
-            .github/**
-            README.md
-            .env
+
