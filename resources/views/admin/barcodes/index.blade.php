@@ -127,7 +127,7 @@
                                         <td>
                                             <div class="flex gap-2 justify-center">
                                                 <button class="btn btn-sm btn-info btn-outline gap-1"
-                                                    @click="editBarcode({{ $barcode->id }}, '{{ addslashes($barcode->title) }}', '{{ addslashes($barcode->description) }}')">
+                                                    @click="editBarcode({{ $barcode->id }}, '{{ addslashes($barcode->title) }}', '{{ addslashes($barcode->description) }}', '{{ addslashes($barcode->link) }}')">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                                         viewBox="0 0 20 20" fill="currentColor">
                                                         <path
@@ -215,6 +215,27 @@
                             </template>
                         </div>
 
+                        {{-- Handle Link Input --}}
+                        <div class="form-control">
+                            <label class="label cursor-pointer justify-start gap-2">
+                                <input type="checkbox" x-model="createForm.hasLink" class="checkbox" />
+                                <span class="label-text font-semibold">Add Link</span>
+                            </label>
+                        </div>
+
+                        <div class="form-control" x-show="createForm.hasLink" x-transition>
+                            <label class="label">
+                                <span class="label-text font-semibold">Link</span>
+                            </label>
+                            <input type="text" x-model="createForm.link" name="link"
+                                placeholder="Enter link URL" class="input input-bordered w-full" />
+                            <template x-if="createForm.errors.link">
+                                <label class="label">
+                                    <span class="label-text-alt text-error" x-text="createForm.errors.link"></span>
+                                </label>
+                            </template>
+                        </div>
+
                         <div class="modal-action">
                             <button type="button" class="btn btn-ghost"
                                 @click="$dispatch('close-modal', 'createItem'); resetCreateForm()">
@@ -269,6 +290,27 @@
                                 <label class="label">
                                     <span class="label-text-alt text-error"
                                         x-text="editForm.errors.description"></span>
+                                </label>
+                            </template>
+                        </div>
+
+                        {{-- Handle Link Input --}}
+                        <div class="form-control">
+                            <label class="label cursor-pointer justify-start gap-2">
+                                <input type="checkbox" x-model="editForm.hasLink" class="checkbox" />
+                                <span class="label-text font-semibold">Add Link</span>
+                            </label>
+                        </div>
+
+                        <div class="form-control" x-show="editForm.hasLink" x-transition>
+                            <label class="label">
+                                <span class="label-text font-semibold">Link</span>
+                            </label>
+                            <input type="text" x-model="editForm.link" name="link"
+                                placeholder="Enter link URL" class="input input-bordered w-full" />
+                            <template x-if="editForm.errors.link">
+                                <label class="label">
+                                    <span class="label-text-alt text-error" x-text="editForm.errors.link"></span>
                                 </label>
                             </template>
                         </div>
@@ -335,6 +377,8 @@
                     createForm: {
                         title: '',
                         description: '',
+                        link: '',
+                        hasLink: false,
                         errors: {},
                         loading: false
                     },
@@ -342,6 +386,8 @@
                         id: null,
                         title: '',
                         description: '',
+                        link: '',
+                        hasLink: false,
                         errors: {},
                         loading: false
                     },
@@ -365,6 +411,8 @@
                         this.createForm = {
                             title: '',
                             description: '',
+                            link: '',
+                            hasLink: false,
                             errors: {},
                             loading: false
                         };
@@ -394,7 +442,8 @@
                                 },
                                 body: JSON.stringify({
                                     title: this.createForm.title,
-                                    description: this.createForm.description
+                                    description: this.createForm.description,
+                                    link: this.createForm.hasLink ? this.createForm.link : null
                                 })
                             });
 
@@ -419,10 +468,12 @@
                         }
                     },
 
-                    editBarcode(id, title, description) {
+                    editBarcode(id, title, description, link, hasLink) {
                         this.editForm.id = id;
                         this.editForm.title = title;
                         this.editForm.description = description || '';
+                        this.editForm.link = link || '';
+                        this.editForm.hasLink = !!link;
                         this.$dispatch('open-modal', 'editItem');
                     },
 
@@ -441,7 +492,8 @@
                                 },
                                 body: JSON.stringify({
                                     title: this.editForm.title,
-                                    desc: this.editForm.description
+                                    desc: this.editForm.description,
+                                    link: this.editForm.hasLink ? this.editForm.link : null
                                 })
                             });
 

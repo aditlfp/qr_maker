@@ -48,7 +48,7 @@ class BarcodeController extends Controller
             $barcode->link = $request->link;
             $barcode->user_id = auth()->id();
 
-            $qrData = "{$request->title}";
+            $qrData = $request->link ? $request->link : $request->title;
             $safeTitle = \Illuminate\Support\Str::slug($request->title . '-' . Str::random(5));
             $qrPath = "qrcodes/generate_{$safeTitle}.png";
 
@@ -151,7 +151,7 @@ class BarcodeController extends Controller
             $barcode->user_id = auth()->id();
 
             // ---- Generate new QR ----
-            $qrData = "{$request->title}";
+            $qrData = $request->link ? $request->link : $request->title;
             $safeTitle = \Illuminate\Support\Str::slug($request->title . '-' . Str::random(5));
             $qrPath = "qrcodes/generate_{$safeTitle}.png";
 
