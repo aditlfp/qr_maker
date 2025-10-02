@@ -1,22 +1,28 @@
-name: Deploy Laravel ke Jagoan Hosting
+name: Deploy to FTP Hosting
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]  # Trigger on pushes to the main branch
 
 jobs:
   deploy:
-    name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
 
+      - name: Upload Files via FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          if [ ! -d "$SOURCE_DIR" ]; then
+            echo "Error: Source directory '$SOURCE_DIR' does not exist."
+            exit 1
+          fi
+          lftp -e "mkdir -p ${FTP_DIR}; mirror --reverse --delete --verbose --exclude-glob .git/ ${SOURCE_DIR} ${FTP_DIR}; quit" \
+            -u $FTP_USER,$FTP_PASSWORD $FTP_HOST
