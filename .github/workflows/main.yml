@@ -8,7 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Pastikan job tidak berjalan lebih dari 10 menit agar tidak hang
     timeout-minutes: 60
 
     steps:
@@ -21,10 +20,9 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          passive: true
-          protocol: ftp
-          port: 21
-          # Daftar file/folder yang tidak perlu diupload
+          protocol: ftps          # 👈 use ftps instead of ftp
+          port: 21                # usually still 21 for FTPS
+          timeout: 60000          # increase timeout
           exclude: |
             node_modules/**
             .git/**
