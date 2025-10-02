@@ -1,0 +1,30 @@
+name: Deploy to FTP Hosting
+
+on:
+  push:
+    branches: [main]  # Trigger on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Upload Files via FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_DIR || '/' }} 
+          SOURCE_DIR: ${{ secrets.SOURCE_DIR || '.' }} 
+        run: |
+          if [ ! -d "$SOURCE_DIR" ]; then
+            echo "Error: Source directory '$SOURCE_DIR' does not exist."
+            exit 1
+          fi
+          lftp -e "set ssl:verify-certificate no; mkdir -p ${FTP_DIR}; mirror --reverse --delete --verbose --exclude-glob .git/ ${SOURCE_DIR} ${FTP_DIR}; quit" \
+          -u $FTP_USER,$FTP_PASSWORD $FTP_HOST
