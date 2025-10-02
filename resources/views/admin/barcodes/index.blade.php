@@ -92,6 +92,7 @@
                                     <th class="bg-base-200">QR Code</th>
                                     <th class="bg-base-200">Title</th>
                                     <th class="bg-base-200">Description</th>
+                                    <th class="bg-base-200">Link</th>
                                     <th class="bg-base-200">Created At</th>
                                     <th class="bg-base-200 text-center">Actions</th>
                                 </tr>
@@ -114,6 +115,11 @@
                                         <td>
                                             <span class="text-sm">
                                                 {{ $barcode->description ?: 'N/A' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-sm">
+                                                {{ $barcode->link ?: 'N/A' }}
                                             </span>
                                         </td>
                                         <td>
