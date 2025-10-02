@@ -21,6 +21,9 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
+          passive: true
+          protocol: ftp
+          port: 21
           # Daftar file/folder yang tidak perlu diupload
           exclude: |
             node_modules/**
