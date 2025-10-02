@@ -1,30 +1,41 @@
-name: Deploy to FTP Hosting
+name: Deploy Laravel ke Jagoan Hosting
 
 on:
   push:
-    branches: [main]  # Trigger on pushes to the main branch
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Pastikan job tidak berjalan lebih dari 10 menit agar tidak hang
+    timeout-minutes: 10
+
     steps:
-      - name: Checkout Repository
+      - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: Upload Files via FTP
-        env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          FTP_DIR: ${{ secrets.FTP_DIR || '/' }} 
-          SOURCE_DIR: ${{ secrets.SOURCE_DIR || '.' }} 
-        run: |
-          if [ ! -d "$SOURCE_DIR" ]; then
-            echo "Error: Source directory '$SOURCE_DIR' does not exist."
-            exit 1
-          fi
-          lftp -e "set ssl:verify-certificate no; mkdir -p ${FTP_DIR}; mirror --reverse --delete --verbose --exclude-glob .git/ ${SOURCE_DIR} ${FTP_DIR}; quit" \
-          -u $FTP_USER,$FTP_PASSWORD $FTP_HOST
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Assets
+        run: npm run build
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Daftar file/folder yang tidak perlu diupload
+          exclude: |
+            node_modules/**
+            .git/**
+            .github/**
+            README.md
+            .env
