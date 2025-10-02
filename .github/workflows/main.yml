@@ -20,8 +20,6 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: sftp          # 👈 use ftps instead of ftp
-          port: 21                # usually still 21 for FTPS
           timeout: 60000          # increase timeout
           exclude: |
             node_modules/**
